@@ -109,7 +109,7 @@ docker-compose-up
 docker run -it --network host --rm bitnami/kafka:3.6.1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my.first.topic
 ```
 
-### Create a consumer that listens to a topic
+### Create a producer that sends messages to a topic
 ```bash
 docker run -it --network host --rm bitnami/kafka:3.6.1 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic my.first.topic
 ```
