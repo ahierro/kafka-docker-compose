@@ -20,7 +20,7 @@
 - Kafka maintains a numerical offset for each record in a partition. This offset acts as a unique identifier of a record within that partition, and also denotes the position of the consumer in the partition.
 
 ### What is a message or a record in Kafka?
-- A message is something sent over asynchronouse communication channel which can contain a request or an event. A message is compound of:
+- A message is something sent over asynchronous communication channel which can contain a request or an event. A message is compound of:
     1. Key: Allows for ordering of events. It is optional, defaults to null. Messages with the same key are guaranteed to be placed in the same partition.
     2. Headers: Holds metadata information. It consists of ordered key-value pairs. The key is a string identifier. The value is any serialized object.
     3. Value: It represents a payload and can be a request or an event. It can be in a number of formats like string, json or Avro. Default max size is 1 MB.
@@ -98,6 +98,31 @@
     - max.in.flight.requests.per.connection: This setting limits the number of unacknowledged requests the client will send on a single connection before blocking. Setting it to 1 ensures that messages are sent sequentially, which can be important for maintaining order, but it may also reduce throughput.
     - enable.idempotence: When set to true, this ensures that messages are delivered exactly once to a particular partition during the lifetime of a single producer session. This is achieved by preventing the producer from sending duplicate messages as a result of retries. It requires acks to be set to all and max.in.flight.requests.per.connection to be set to 5 or lower.
 
+### Kafka configuration good practices
+- auto.create.topics.enable: false (default true) In production environments, it's often recommended to set auto.create.topics.enable to false. This is because automatic topic creation can lead to operational issues, such as unintended topic creation due to typos in topic names, which can complicate cluster management. It also means that topics will be created with default configurations, which may not be optimal for all use cases.
+
+### How do consumers know from what point to consume messages from a topic partition?
+- The latest consumed offset for each topic partition is tracked for each consumer group
+
+### If there are more consumer instances in a consumer group than partitions in a given partition, then how many consumers instances will be assigned the same partition?
+- Only one consumer can be assigned to a topic partition at any one time. If there are more consumers than partitions, than those consumers that have no partitions assigned are idle.
+
+### What is consumer group rebalance?
+- It is a process that redistributes the partitions of a topic among the consumers in a consumer group to ensure an even load distribution.
+
+### When consumer group rebalance is triggered?
+- It is triggered when:
+  1. It detect a failed consumer.
+  2. A new consumer joins the consumer group
+  3. Partitions Added to a Topic
+  4. Manual Trigger (An administrator can also manually trigger a rebalance through various administrative actions or configurations changes that affect the group.)
+
+### What mechanisms are used by the broker to detect a failed consumer?
+- Heartbeating
+- Polling time out
+
+### How does Kafka guarantee message ordering?
+- It guarantees message ordering by ensuring all messages with the same key are witten to the same partition. As a topic partition will only ever have a single consumer, the messages on the partition are guaranteed to be consumed in order.
 
 ### Start Kafka server
 ```bash
@@ -112,6 +137,15 @@ docker run -it --network host --rm bitnami/kafka:3.6.1 kafka-console-consumer.sh
 ### Create a producer that sends messages to a topic
 ```bash
 docker run -it --network host --rm bitnami/kafka:3.6.1 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic my.first.topic
+```
+
+### Create a producer that sends messages to a topic with a key separated by ':' example Key:Payload
+```bash
+docker run -it --network host --rm bitnami/kafka:3.6.1 kafka-console-producer.sh --bootstrap-server localhost:9092 --topic my.first.topic --property parse.key=true --property key.separator=:
+```
+### Create a consumer that listens to a topic and print key
+```bash
+docker run -it --network host --rm bitnami/kafka:3.6.1 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic my.first.topic --property print.key=true --property key.separator=:
 ```
 
 ### List created topics
