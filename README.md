@@ -6,9 +6,15 @@
 
 ### What are the essential main components involved in Kafka communication?
 -   There are 3 main components
-    1. Producer: Sends to the broker. It is the source of the messages.
-    2. Broker: It is a message store and represents the point of contact between producer and consumer.
-    3. Consumer: Pulls from Broker. (This differs from other messaging systems like RabbitMQ or ActiveMQ where the broker pushes the message to the consumers)
+    1. Producer: It is a client application that publishes events to the Kafka Cluster.
+    2. Kafka Cluster: It represents the point of contact between producer and consumer.
+    3. Consumer: Pulls events from Broker and processes them. (This differs from other messaging systems like RabbitMQ or ActiveMQ where the broker pushes the message to the consumers)
+
+## What is a Kafka Cluster?
+- A Kafka cluster is a group of Kafka brokers working together to distribute the storage and data processing in a fault-tolerant way. Kafka balances the load across multiple servers providing scaliability. Also, data is replicated across those servers so if one fails another server has the data backed up ensuring data durability and availability.
+
+## What is a Kafka broker?
+- A Kafka broker is a server in an Apache Kafka cluster that is responsible for storing and managing the data sent to Kafka.
 
 ### What is a Topic?
 - A topic is a destination on the broker where producers send the messages to. It is a collection of related events that get persisted on disk. These events can be stored in the topic permanently or for a configurable amount of time. The default retention period is 1 week. Topics in Kafka are the high-level structure. Topics are divided into one or more partitions, which allows the data to be scaled across a Kafka cluster for parallel processing.
@@ -27,7 +33,7 @@
     4. Timestamp: Creation time or ingestion time.
 
 ### What is a Consumer Group?
-- Consumer group is an identifier or label that is applied to a consumer. Each consumer in a consumer group independently maintains its position (offset) in each partition. The assignment of partitions to consumers within a group ensures that each message is processed once and only once by the group, as each partition is only consumed by one consumer in the group.
+- Consumer group is a logical grouping of kafka consumers. Each consumer group independently maintains its position (offset) in each partition. The assignment of partitions to consumers within a group ensures that each message is processed once and only once by the group, as each partition is only consumed by one consumer in the group.
 
 ### What is a segment on apache kafka?
 - A segment in Apache Kafka refers to a part of a Kafka topic's partition. Kafka topics are divided into partitions for scalability and parallel processing, and each partition is further divided into segments. These segments are essentially the files where Kafka stores its data. Here's a more detailed breakdown:
